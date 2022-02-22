@@ -180,3 +180,164 @@ VOLUME을 사용해서 파일목록을 mapping하면 이후에 소스코드가 �
 -v %cd%:/usr/src/app => %cd%는 참조할 local의 디렉토리 주소, /usr/src/app은 컨테이너의 WORKDIR 주소
 
 ---------------------------------------------------------------------------------
+
+docker compose
+다중 컨테이너 도커 애플리케이션을 정의하고 실행하기 위한 도구
+
+간단한 앱만들기 with redis
+ 
+redis?
+== remote dictionary server 는 메모리 기반의 키-값 구조
+데이터 관리시스템, 모든 데이터를 메모리에 저장하고 빠르게 조회할 수 있는 비관계형 데이터베이스임(NoSql)
+
+server.js
+Dockerfile 작성
+
+nodejs + redis 로 만든 앱을 docker로 올리면
+먼저 redis 서버가 작동하고 있어야함(전제)
+이후에 nodejs앱 + redis 클라이언트가 한 컨테이너에서 작동
+
+하지만 에러가 발생한다.
+=> 이유는 컨테이너 사이에서 아무런 설정없이 통신할 수 없기 때문에
+=> nodejs 앱에서 redis 서버에 접근 할 수 없다.
+
+[그림추가]
+ 
+컨테이너 사이에서 통신 설정을 해주기 위해서는 (멀티 컨테이너 상황)
+docker-compose파일을 작성한다.
+
+docker-compose.yml 작성
+[그림추가]
+
+```
+version: "3"
+services:
+  redis-server:
+    image: "redis"
+  node-app:
+    build: .
+    ports:
+      - "5000:8080"
+```
+
+docker-compose up 
+=> 실행
+docker-compose up -d
+=> 백그라운드로 실행
+docker-compose up --build
+=> 다시 build 하고 실행
+docker-compose up -d --build
+=> 백그라운드로 다시 build하고 실행
+
+
+docker-compose down 
+=> 컨테이너 멈추기
+
+docker-compose down
+=> 멈추기
+
+---------------------------------------------------------------------------------
+간단한 어플을 실제로 배포하기(6강)
+=> 개발환경에서 간단한 리액트 앱 개발
+(7강) => 리액트 앱 테스트 & 배포
+
+[그림추가]
+
+리액트 설치
+npx create-react-app ./
+
+리액트 실행
+npm run start
+리액트 테스트
+npm run test
+리액트 배포
+npm run build
+
+react의 dockerfile 만들기
+
+```
+FROM node:alpine
+
+WORKDIR /usr/src/app
+
+COPY package.json ./
+
+RUN npm install
+
+COPY ./ ./
+
+CMD ["npm", "run", "start"]
+```
+
+Dockerfile.dev가 작성된 이후에
+docker build ./ 하면 Dockerfile을 찾지 못했다는 에러가 발생
+=> docker build -f Dockerfile.dev ./
+=> -f옵션으로 직접 Dockerfile이름을 지정해줌
+
+node_modules 삭제 => 강의록 참고
+
+포트 설정 + -it 옵션을 한 후 에 run!
+----------------------------------------------------
+[react 앱을 docker로 실행하기]
+위에서 만든 react Dockerfile.dev를 가지고 이미지 만들기
+=> docker build -f Dockerfile.dev -t ghlim909/docker-react-app
+
+만든 이미지로 컨테이너 만들기
+=> docker run -it -p 3000:3000 ghlim909/docker-react-app
+----------------------------------------------------
+
+VOLUME 옵션
+소스코드에서 변경이 되었을 경우 다시 이미지를 빌드하지 않고 VOLUME를 통해 변경한 부분을 적용하기
+
+docker run -it -p 3000:3000 -v /usr/src/app/node_modules -v $(pwd):/usr/src/app markcha/react
+
+해당 디렉토리가 없거나 관리자 권한이 필요할 때 
+```
+FROM node:alpine
+
+RUN cd home \
+        && mkdir ret
+
+RUN chmod -R 777 /home/ret
+
+WORKDIR home/ret
+
+COPY package.json .\
+
+RUN npm install
+
+COPY ./ ./
+
+CMD ["npm", "run", "start"]
+```
+
+위의 run 실행 명령이 너무 길기 때문에 좀 더 간단한 방법 사용해보기
+=> docker-compose.yml 이용
+
+```
+version: "3"
+services:
+  react:
+    build:			=> Dockerfile를 통해서 이미지를 만들고 빌드하는 경우에 작성
+      context: .		=> Dockerfile이 있는 위치
+      dockerfile: Dockerfile.dev
+    ports:
+      - "3000:3000"
+    volumes:
+      - /usr/src/app/node_modules	=> node_modules는 참조할 필요 없음을 알림 
+      - ./:/usr/src/app		=> -v $(pwd):/usr/src/app 과 같은 역할
+    stdin_open: true
+```
+
+docker-compose 작성 후에
+=> docker-compose up 으로 실행 
+
+react앱을 docker 에서 테스트하기
+npm run test를 docker 내부에서 하는법
+=> docker run -it -p 3000:3000 ghlim909/docker-react-app npm run test
+
+
+
+
+
+
