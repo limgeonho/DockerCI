@@ -280,7 +280,7 @@ node_modules 삭제 => 강의록 참고
 ----------------------------------------------------
 [react 앱을 docker로 실행하기]
 위에서 만든 react Dockerfile.dev를 가지고 이미지 만들기
-=> docker build -f Dockerfile.dev -t ghlim909/docker-react-app
+=> docker build -f Dockerfile.dev -t ghlim909/docker-react-app ./
 
 만든 이미지로 컨테이너 만들기
 => docker run -it -p 3000:3000 ghlim909/docker-react-app
@@ -336,8 +336,56 @@ react앱을 docker 에서 테스트하기
 npm run test를 docker 내부에서 하는법
 => docker run -it -p 3000:3000 ghlim909/docker-react-app npm run test
 
+-----------------------------------
+운영환경
+nginx
 
+[그림추가]
 
+개발환경에서는 개발서버를 사용하지만 운영환경에서는 개발서버가 아닌 nginx를 사용한다
+nginx를 사용하는 이유는
+nginx가 개발서버보다 불필요한 기능들이 없기 때문에 가볍다
+nginx는 운영환경에 최적화되어 있기 때문에 빠르다. 
+
+=> 따라서 운영환경에서는 nginx가 필요함
+
+Dockerfile.dev와 운영용 Dockerfile을 따로 작성한다.
+
+운영용 Dockerfile은
+react 빌드파일을 만드는 부분(builder stage) + nginx를 실행하는 부분(run stage)
+
+(builder stage) 에서 생성된 파일들은 /usr/src/app/build 에 생성된다.
+[핸드폰 사진 참고]
+
+nginx 와 연결하기 위해서는 /usr/share/nginx/html 에 연결
+
+(builder stage)에서 생성한 빌드 파일들을 nginx의 /usr/share/nginx/html에 COPY한다
+=> nginx가 외부에서 http요청이 들어올때마다 적절한 파일을 전달해줌
+
+Dockerfile
+```
+FROM node:alpine as builder	=> FROM과 FROM사이에서는 builder로 부르겠음
+
+WORKDIR '/usr/src/app'
+
+COPY package.json ./
+
+RUN npm install
+
+COPY ./ ./
+
+RUN npm run build	=> 이제 build니까!
+
+FROM nginx		=> nginx를 위한 베이스 이미지
+
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html	=> FROM builder에서 가져옴 [빌드파일] [nginx로 복사 위치]
+```
+
+=> docker build -t [설정할 이미지 이름] . 으로 이미지 생성
+=> 이미지가 생성된 후에 해당 이미지로 앱을 실행
+=> docker run -p 8080:80 [이미지 이름] => nginx의 기본 포트번호는 80
+
+[그림추가] * 2
 
 
 
