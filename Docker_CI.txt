@@ -388,4 +388,561 @@ COPY --from=builder /usr/src/app/build /usr/share/nginx/html	=> FROM builder에�
 [그림추가] * 2
 
 
+---------------------------------------------------------------------------------
+(7강)
+Travis CI를 적용해서 테스트하기
+Travis CI란?
+- github에 push된 repo의 코드를 테스트하고 테스트 성공시에는 AWS에 빌드하거나 배포해주는 도구 
+
+Travis CI flow
+[그림 추가 -12번]
+
+
+
+[그림추가 -9번]
+repo를 github에 올리고
+이후에 master branch를 Travis CI가 가져가서 테스트를 진행한다
+테스트가 성공이면 AWS로 가져가서 배포한다
+
+--------------------------------------
+STEP 1. 
+github에 local repo를 push하기~
+
+STEP 2.
+github과 Travis CI를 연결하기
+Travis CI 로그인(깃헙 로그인) => settings => 올린 도커 repo를 활성화 ㅡ=> dashboard
+
+STEP 3.
+.travis.yml 파일 작성하기
+```
+sudo: required		=> sudo 로 실행
+
+language: generic		=> 언어는 generic
+
+services:			=> docker 환경으로 실행
+  - docker
+
+before_install:
+  - echo "start creating an image with dockerfile"
+  - docker build -t ghlim909/docker-react-app -f Dockerfile.dev .	=> 시작하기 전에 이미지 빌드하기
+
+script:
+  - docker run -e CI=true ghlim909/docker-react-app npm run test -- --coverage	=> -e CI=true는 Travis CI 명령, 실행 script
+
+after_success:
+  - echo "Test success"
+```
+
+.travis.yml 를 작성한 후에 다시 github repo에 push한다
+=> travis CI에 들어가서 해당 dashboard에서 해당 repo를 찾아보면 빌드가 되고 테스트하는 과정을 볼 수 있다.
+
+--------------------------------------
+
+AWS
+
+EB = Elastic Beanstalk == 일종의 환경임
+=> apache, nginx 같은 친숙한 서버에서 다양한 언어와 docker로 개발된 웹 응용 프로그램 및 서비스를
+배포하고 확장하기 쉬운 서비스이다.
+
+EB에는 EC2인스턴스, 데이터베이스, Security그룹 등 다양한 요소들이 환경을 구성하고 있다.
+
+EB를 설정하고 실행하면 
+[핸드폰 사진] 같은 환경이 만들어진 것임
+
+--------------------------------------
+지금까지는 .travis.yml 파일 안에 test가 성공했을 경우 까지만 작성되어 있다.
+=> 이제 성공했을 경우 AWS EB에 자동으로 배포하는 부분을 .travis.yml안에 설정해야한다.
+
+.travis.yml 에 추가 될 내용
+[사진 추가 -16]
+bucket_name를 설정하는 이유? 
+=> Travis CI는 가지고 있는 파일을 먼저 압축해서 S3로 보낸다
+=> S3에 적혀있는 이름을 넣는다
+
+.travis.yml 
+```
+sudo: required
+
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - echo "start creating an image with dockerfile"
+  - docker build -t ghlim909/docker-react-app -f Dockerfile.dev .
+
+script:
+  - docker run -e CI=true ghlim909/docker-react-app npm run test -- --coverage
+
+deploy:
+  provider: elasticbeanstalk
+  region: "ap-northeast-2"
+  app: "docker-react-app"
+  env: "Dockerreactapp-env"
+  bucket_name: "elasticbeanstalk-ap-northeast-2-346423126356"
+  bucket_path: "docker-react-app"
+  on:
+    branch: master
+```
+
+--------------------------------------
+Travis CI와 AWS가 연동되기 위해서는 인증이 필요함
+=> AWS에서 제공하는 secret key를 Travis yml파일에 적어줘야함
+
+=> 위의 인증을 위해서는 API key가 필요함
+1. IAM USER 생성
+=> Identity and Access Management
+=> 왜 만들까?
+=> 현재 사용하는 계정은 root 계정이다 
+=> root 계정은 모든 권한을 가지고 있지만 보안을 위해서 좋지 않다 => IAM 계정 생성
+=> IAM 사용자는 root 사용자가 부여한 권한만 가질 수 있다
+
+2. IAM 계정에 ElasticBeanstalkFullAccess 권한을 부여하고 키와 비밀키를 받는다
+
+3. 위의 키들을 .travis.yml에 직접 넣으면 노출되기 때문에 Travis CI의 dashboard => more options => settings 에서 각각 key등록 
+
+=> key까지 넣은 최종 .travis.yml
+```
+sudo: required
+
+language: generic
+
+services:
+  - docker
+
+before_install:
+  - echo "start creating an image with dockerfile"
+  - docker build -t ghlim909/docker-react-app -f Dockerfile.dev .
+
+script:
+  - docker run -e CI=true ghlim909/docker-react-app npm run test -- --coverage
+
+deploy:
+  edge: true			=> 에러나서 추가함
+  provider: elasticbeanstalk
+  region: "ap-northeast-2"
+  app: "docker-react-app"
+  env: "Dockerreactapp-env"
+  bucket_name: "elasticbeanstalk-ap-northeast-2-346423126356"
+  bucket_path: "docker-react-app"
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_ACCESS_KEY
+```
+
+(참고)
+Dockerfile의 nginx부분에서 EXPOSE 80 추가 : nginx가 80번에서 켜지기 때문에
+
+==> 다시 github에 push
+
+버전 맞춰서 내일다시 해보기
+
+==================================================
+8강,9강
+back + db + front 개발
+
+nginx는 2가지 역할을 한다
+1. 단순하게 정적인 파일들을 보여주는 안내자 역할
+2. proxy를 이용해서 요청되는 url에 따라 다르게 FE와 BE로 요청을 분리해서 보내주는 역할
+
+[사진 참고 - 캡쳐해야함 조각조각]
+
+BE - package.json
+```
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js",
+    "dev": "nodemon server.js"	=> nodemon을 이용해서 시작할때 사용
+  },
+  "dependencies": {
+    "express": "4.16.3",
+    "mysql": "2.16.0",
+    "nodemon": "1.18.3",		=> 소스코드가 수정된 것을 감지하면 알아서 다시 적용해줌
+    "body-parser": "1.19.0"		=> 클라이언트에서 오는 요청의 본문을 해석해주는 미들웨어
+  },
+  "author": "",
+  "license": "ISC"
+}
+```
+
+nodejs(BE)부분 코드 참고
+react(FE)부분 코드 참고
+
+-------------------------------------
+FE Dockerfile 작성
+nginx의 default.conf 파일 작성 [핸드폰 사진 참고]
+```
+server{
+  listen 3000;			=> 3000번 포트로 들어왔을경우 아래의 location /
+
+  location / {
+    root /usr/share/nginx/html;	=> /의 기본으로 보여주는 페이지(FE의 빌드파일이 위치)
+
+    index index.html index.htm;	=> 사이트의 index페이지로 할 파일명 설정
+
+    try_files $uri $uri/ /index.html;	=> react-router를 사용하기 위해서 반드시 필요한 옵션
+  }
+}
+```
+nginx는 정적파일을 보여주기 위한 server역할과 proxy를 위한 역할로 나눠진다.
+여기서 작성되는 nginx Dockerfile은 server역할이다. 아래에서 proxy를 위한 역할로 쓸것임
+
+
+운영용 Dockerfile
+```
+FROM node:alpine as builder
+
+WORKDIR /app
+
+COPY ./package.json ./
+
+RUN npm install
+
+COPY ./ ./
+
+RUN npm run build
+
+FROM nginx
+EXPOSE 3000		=> 해당 컨테이너는 3000포트를 열고 있겠다.
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf	=> 내가 만든 nginx default.conf 파일을 실제 컨테이너안의 nginx에 복사해준다. 
+COPY --from=builder /app/build /usr/share/nginx/html	=> 빌드한 파일을 index.html로 나올 수 있도록 설정
+```
+-------------------------------------
+BE Dockerfile 작성
+
+Dockerfile.dev에서 CMD ["npm", "run", "dev"] 한 이유는 개발환경에서는 nodemon을 사용하기 위해서
+
+-------------------------------------
+DB에 관하여...
+
+nginx처럼 개발환경과 운영환경에서 DB는 다르게 설정한다.
+
+개발환경 => 도커 환경이용
+운영환경 => AWS RDS 서비스 이용
+
+why? 
+=> DB작업은 중요한 데이터들을 보관하고 이용하기 때문에 실수하면 안된다. 따라서 더 안정적인 AWS RDS를 이용
+
+--------
+mysql의 데이터베이스를 위한 도커파일 작성하기
+
+mysql my.cnf	=> nginx의 conf를 작성한 것과 같은 이치로 mysql의 설정 
+```
+[mysqld]
+character-set-server=utf8
+
+[mysql]
+default-character-set=utf8
+
+[client]
+default-character-set=utf8
+```
+
+mysql Dockerfile
+```
+FROM mysql:5.7
+
+ADD ./my.cnf /etc/mysql/conf.d/my.cnf
+```
+
+-------------------------------
+nginx가 proxy로 쓰이는 경우의 Dockerfile
+
+해당 어플리케이션은 client가 요청하는 url에 따라
+location /
+location /api/ 
+=> 로 각각 BE와 FE로 나눠야함(nginx의 proxy역할)
+
+proxy nginx 설정
+[핸드폰 사진 참고]
+
+default.conf 작성
+```
+upstream frontend {
+    server frontend:3000;		=> FE는 3000번
+}
+
+upstream backend {		=> BE는 5000번
+    server backend:5000;
+}
+
+server {
+    listen 80;			=> nginx는 80번 포트를 개방
+
+    location / {
+        proxy_pass http://frontend;	=> url이 / 일때 FE
+    }
+
+    location /api {
+        proxy_pass http://backend;	=> url이 /api 일때 BE
+    }
+
+    location /sockjs-node {		=> FE를 위한 필수 작성요소 없으면 에러남
+        proxy_pass http://frontend;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+    }
+
+}
+```
+
+proxy nginx Dockerfile
+```
+FROM nginx
+COPY ./default.conf  /etc/nginx/conf.d/default.conf
+```
+
+--------------------------
+위에서 각각의 Dockerfile들을 만들어 주었다
+하지만 각각의 Dockerfile들을 실행해도 컨테이너 환경은 각각 독립적으로 작동하기 때문에 서로 통신할 수 없다
+=> 따라서 docker-compose파일을 작성한다.
+위의 내용들을 실행할 docker-compose.yml파일 작성
+
+docker-compose.yml
+```
+version: "3"
+services:
+  frontend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./frontend
+    volumes:
+      - /app/node_modules
+      - ./frontend:/app
+    stdin_open: true		=> react를 사용하기 위해서는 필수적 요소 없으면 에러남
+
+  nginx:
+    restart: always
+    build:
+      dockerfile: Dockerfile
+      context: ./nginx
+    ports:
+      - "3000:80"
+
+  backend:
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./backend
+    container_name: app_backend
+    volumes:
+      - /app/node_modules
+      - ./backend:/app
+
+  mysql:
+    build: ./mysql
+    restart: unless-stopped
+    container_name: app_mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/mysql_data:/var/lib/mysql
+      - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myapp
+```
+
+-------------------------------
+volume를 이용해서 데이터 베이스 데이터를 유지하는 방법
+
+기존에 volume을 사용한 이유는 리액트나 노드에서 코드가 수정되었을 때 바로 적용되게 하기 
+위해서 사용했었지만
+이번에는 데이터베이스에 저장된 자료를 컨테이너를 지우더라도 남아있게 하기위한 volume이다
+=> 왜냐하면 원래 컨테이너를 지우면 컨테이너에 저장되어 있던 데이터들도 지워지기 때문에
+
+컨테이너에서 변화가 일어난 데이터가 컨테이너 안에 저장되는 것이 아닌
+*호스트 파일 시스템에 저장되고 그 중에서도 도커에 의해서만 통제가 되는 도커 Area에 저장 되므로
+컨테이너를 삭제해도 변화된 데이터는 사라지지 않는다
+
+docker-compose.yml의 mysql에서
+```
+  mysql:
+    build: ./mysql
+    restart: unless-stopped
+    container_name: app_mysql
+    ports:
+      - "3306:3306"
+    volumes:				=> volume 부분에서 호스트 파일 시스템이 참조한다
+      - ./mysql/mysql_data:/var/lib/mysql
+      - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: myapp
+```
+[사진 참고]
+
+=======================================================================
+9강에서 달라지는 점 2가지
+1. AWS 배포 과정
+2. mysql 개발환경을 도커에서 진행하였지만 => AWS RDS를 사용할 예정
+
+AWS 배포 과정
+github에 push => master branch에 push가 되면 => Travis CI가 감지 후 테스트
+=> 테스트가 성공하면 Dockerfile을 이용해서 Image를 생성(빌드) 후 Docker hub에 저장 => Docker Hub에서는 Travis CI에서 빌드된 이미지를 보관
+=> AWS EB가 가져가려고 할 때 전달 => AWS EB에서 최종 배포 
+
+
+---------------
+docker 환경의 mysql부분 정리
+이제부터는 개발환경이 아니라 운영환경이기 때문에 docker-compose.yml에서 mysql에 관한 사항이 필요 없다
+AWS RDS에서 연결해야함
+=> docker-compose.yml에서 mysql에 관한 내용은 전부 주석 처리
+
+-------------------- 1. gitbub에 push(master branch)
+.gitignore를 통해서 불필요한 파일 ex) BE의 node_modules등을 추가하고 github에 push 한다
+
+-------------------- 2. Travis CI
+github에 push => Travis CI에서 자동으로 코드를 가져옴 => 테스트 진행 => 성공하면 해당 이미지들을 빌드
+=> 빌드 된 이미지들을 docker hub에 보냄(docker hub에 빌드된 이미지를 보내고 AWS에서 그 이미지를 가져가므로 EB안에서 다시 빌드하지 않아도 된다!)
+=> AWS EB에 docker hub에 이미지를 보냈다고 알림 => AWS EB에서 docker hub에 있는 이미지를 가져온 후에 배포
+[사진추가-17] 
+
+Travis CI에서 github에 있는 docker-fullstack-app을 활성화한다(이제 push event가 발생하면 Travis CI가 감지함)
+
+-------------------- 3. .travis.yml 작성
+[사진추가 -18,19]
+```
+language: generic
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t ghlim909/react-test-app -f ./frontend/Dockerfile.dev ./frontend
+
+script:
+  - docker run -e CI=true ghlim909/react-test-app npm test
+
+after_success:					=> test가 성공하면 docker hub에 내가 만든 이미지를 등록 
+  - docker build -t ghlim909/docker-frontend ./frontend
+  - docker build -t ghlim909/docker-backend ./backend
+  - docker build -t ghlim909/docker-nginx ./nginx
+
+  - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin => Travis CI의 환경변수에 등록!
+
+  - docker push ghlim909/docker-frontend
+  - docker push ghlim909/docker-backend
+  - docker push ghlim909/docker-nginx
+```
+
+=> docker hub에 로그인해서 repositories에 들어가보면 내가 push한 이미지들이 존재함
+
+-------------------------- 4. Dockerrun.aws.json작성
+Dockerrun.aws.json 파일(멀티 컨테이너 환경에서 사용) => docker-compose.yml
+기존에 EB에 배포한 파일에는 Dockerfile이 하나 밖에 없어서 EB가 알아서 배포했지만
+이제는 react, nginx, nodejs 등 여러개의 Dockerfile들이 존재하기 때문에 Dockerrun.aws.json 가 필요함
+
+Dockerrun.aws.json
+```
+{
+  "AWSEBDockerrunVersion": 2,
+  "containerDefinitions": [
+    {
+      "name": "frontend",
+      "image": "ghlim909/docker-frontend",
+      "hostname": "frontend",
+      "essential": false,
+      "memory": 128
+    },
+    {
+      "name": "backend",
+      "image": "ghlim909/docker-backend",
+      "hostname": "backend",
+      "essential": false,
+      "memory": 128
+    },
+    {
+      "name": "nginx",
+      "image": "ghlim909/docker-nginx",
+      "hostname": "nginx",		=> 다른 docker-compose에서 접근할 수 있도록 하는 host 이름임
+      "essential": true,		=> nginx는 멈추면 FE와 BE 모두 작동하지 않기 때문에 멈추면 all stop 명령 : true 
+      "portMappings": [		=> 외부와 컨테이너 포트를 연결 80:80 과 같음
+        {
+          "hostPort": 80,
+          "containerPort": 80
+        }
+      ],
+      "links": ["frontend", "backend"],	=> nginx는 frontend와 backend 둘 다를 연결함
+      "memory": 128
+    }
+  ]
+}
+```
+
+-------------------------- 5. EB환경 설정
+이전에 진행했던 방법과 동일함
+플랫폼은 Docker
++ Multi Container로 설정
+[사진 추가 - 20]
+
+-------------------------- 6. VPC 와 Security group 설정
+VPC 와 Security group를 왜 설정해야하는가?
+=> EB와 RDS를 연결하기 위해!
+
+VPC == Amazon Virtual Private Cloud
+VPC는 내가 AWS에서 만든 ec2, EB, RDS 등을 나의 아이디에서만 접근이 가능하게 논리적으로 격리된
+네트워크에서 생성이 되게 해주는 것(지역별로 다름 ap-northeast-2) 
+
+Security group == 보안그룹(방화벽)
+Security group은 EB에 들어오는 트래픽(인바운드)과 나가는 트래픽(아웃바운드)을 컨트롤 해줌
+
+그렇다면 어떻게 VPC와 Security group를 통해서 EB와 RDS를 연결할까?
+먼저, 현재 EB와 RDS는 같은 VPC를 공유하고 있다(why? 내가 만들었으니까 ap-northeast-2공유) -> 하지만 연결은 X[사진 추가 -21]
+Security group설정으로 같은 VPC를 가지는 것들 끼리는 전부 허용해주면 됨
+[사진 추가 -22]
+
+-------------------------- 7. mysql을 위한 RDS 설정
+docker-compose.yml에서 backend의 environment에 MYSQL관련 환경변수 설정
+
+AWS에서 RDS 선택
+다양한 설정 옵션이 있음 => [사진 추가해야함 AWS캡쳐]
+=> docker-compose에서 설정한 MYSQL 환경변수만 맞춰주면 됨
+
+-------------------------- 8. Security group_1설정
+VPC 생성 => 보안그룹 인바운드규칙에 3306 mysql 추가
+
+-------------------------- 9. Security group_2 설정
+8번에서 생성한 보안그룹을 EB인스턴스와 RDS에 각각 적용해야한다.
+먼저 RDS에 적용 (강의록 참고)
+다음으로 EB에 적용 (강의록 참고)
+=> 이제 EB인스턴스와 RDS가 소통이 가능해짐
+
+-------------------------- 10. EB와 RDS소통을 위한 환경 변수 설정 
+
+EB인스턴스와 RDS가 소통이 가능해졌지만
+EB안에 있는 컨테이너들이 mysql 인스턴스와 소통할 때 환경변수를 인식하지 못함
+=>AWS EB의 구성 => 소프트웨어 편집 => 환경변수 추가(docker-compose backend environment내용 - 이때 MYSQL_HOST만 RDS의 엔드포인트로 설정)
+[사진참고 -23]
+
+-------------------------- 11. .travis.yml에 배포부분 추가하기
+
+.travis.yml
+```
+deploy:
+  provider: elasticbeanstalk
+  region: "ap-northeast-2"
+  app: "docker-fullstack-app"					=> 앱 이름
+  env: "Dockerfullstackapp-env"				=> 앱 환경 이름
+  bucket_name: elasticbeanstalk-ap-northeast-2-346423126356	=> S3의 이름
+  bucket_path: "docker-fullstack-app"				=> 앱 이름과 똑같이 설정
+  on:
+    branch: master
+```
+
+-------------------------- 12. Travis CI의 AWS 접근을 위한 API key생성
+소스파일을 전달하기 위한 접근 조건
+[사진 참고 - 24]
+
+
+
 
