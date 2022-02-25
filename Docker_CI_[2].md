@@ -1,8 +1,4 @@
-FROM node:10
-
-RUN npm install
-
-CMD ["node", "server.js"]Docker CI [2]
+# Docker CI [2]
 
 
 
@@ -68,6 +64,8 @@ CMD ["node", "server.js"]
 
   => 또 에러가 발생함 포트때문
 
+- ![3](Docker_CI_[2].assets/3.png)
+  
 - server.js에 PORT를 8080으로 설정했지만 localhost PORT에서는 접근할 방법이 없다...
   => docker run -p 5000:8080 ghlim909/nodejs
   => docker run -p [localhost의 PORT]:[container의 PORT] [이미지 이름]
@@ -101,6 +99,10 @@ CMD ["node", "server.js"]
   => docker run -it ghlim909/nodejs sh 
   => 를 통해 해당 컨테이너 내부로 들어가면 바로 로컬에서 COPY된 목록들부터 볼 수 있다.
 
+- WORKDIR 적용 결과
+
+  ![4](Docker_CI_[2].assets/4.png)
+
 
 
 - -d 옵션
@@ -120,7 +122,7 @@ CMD ["node", "server.js"]
 
 
 
-- Dockerfile(v4)
+- Dockerfile(최종)
 
 ```dockerfile
 FROM node:10
@@ -142,7 +144,7 @@ CMD ["node", "server.js"]
 
   -v $(pwd):/usr/src/app
 
-  윈도우에서
+  윈도우에서 => 이제는 맥이랑 같은 방법으로 해도 적용됨(업데이트 때문에 가능)
 
   -v %cd%:/usr/src/app
 
@@ -150,7 +152,7 @@ CMD ["node", "server.js"]
 
 - VOLUME 옵션
 - COPY는 로컬의 파일을 컨테이너에 복사하지만 
-  VOLUME은 컨테이너가 로컬의 파일을 참조함
+  VOLUME은 컨테이너가 로컬의 파일을 참조함(COPY와 반대)
 - ![6](Docker_CI_[2].assets/6.png)
 
 - VOLUME을 사용해서 파일목록을 mapping하면 이후에 소스코드가 바뀌어도 이미지를 다시 빌드하지 않고 컨테이너만  stop했다가 run해서 변경된 코드 적용 가능

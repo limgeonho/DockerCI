@@ -31,13 +31,12 @@
 ## 2. docker image
 
 - docker image에는 시작시 실행 될 명령어 + 파일 스냅샷으로 구성되어 있음
+
 - 파일 스냅샷이 컨테이너의 하드디스크로 들어오고 시작시 실행 될 명령어가 실행중인 프로세스에 들어가서 명령을 수행함
 
-### ![1](C:\Users\임건호\Desktop\1.png)
+  ![1](Docker_CI_[1].assets/1.png)
 
-![2](C:\Users\임건호\Desktop\2.png)
-
-
+​	
 
 - ```shell
   docker ps
@@ -51,7 +50,7 @@
 
 - docker의 생명주기
 
-![3](C:\Users\임건호\Desktop\3.png)
+  ![2](Docker_CI_[1].assets/2-16457658553652.png)
 
 - ```shell
   docker run = docker create + docker start
@@ -84,7 +83,7 @@
 - 컨테이너 내부에서 작업하기 위해서는?
 
   ```shell
-  docker exec <컨테이너 아이디> <명령어>
+  docker exec -it <컨테이너 아이디> <명령어>
   ```
 
   그렇다면 해당 방법을 매번 사용해야하나?
@@ -133,6 +132,19 @@
   RUN : 도커이미지가 생성되기 전에 수행할 쉘 명령어 => 필요한 파일들을 다운로드 받는데 사용
   CMD : 컨테이너가 시작되었을 때 실행할 실행 파일 또는 쉘 스크립트(Dockerfile에서 1번만 사용가능)
 
+
+
+
+- Dockerfile 예시
+
+  ```dockerfile
+  FROM node:10 # 베이스 이미지
+  
+  RUN npm install # 이미지가 만들어 지기 전에 실행되는 명령
+  
+  CMD ["node", "server.js"] # 컨테이너가 실행될 때 실행되는 명령 
+  ```
+
   
 
 - Dockerfile 로 docker image 만들기
@@ -140,6 +152,7 @@
   ```shell
   docker build . or docker build ./
   # Dockerfile을 docker client로 전달하는 방법 
+  docker build ./ # 마지막에 반드시 ./ 써줘야함(Dockerfile이 있는 위치) 
   ```
 
 
