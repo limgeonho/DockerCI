@@ -269,7 +269,7 @@
 
 13.  AWS IAM 생성 후 travis.yml파일의 환경변수에 최종 등록하기
 
-    - ![33](https://user-images.githubusercontent.com/73927750/155831413-eb03a657-ea59-47a3-b47d-79186f3721a1.png)
+    ![33](https://user-images.githubusercontent.com/73927750/155831413-eb03a657-ea59-47a3-b47d-79186f3721a1.png)
 
     
 
