@@ -210,7 +210,7 @@
 
       => 환경변수 추가(docker-compose backend environment내용 - 이때 MYSQL_HOST만 RDS의 엔드포인트로 설정)
 
-      ![31](https://user-images.githubusercontent.com/73927750/155831411-7ce81dac-988e-48d3-a175-fb87c2865995.png)
+    - ![31](https://user-images.githubusercontent.com/73927750/155831411-7ce81dac-988e-48d3-a175-fb87c2865995.png)
 
 11.  .travis.yml에 배포부분 추가하기
 
@@ -307,4 +307,107 @@
         secret_access_key: $AWS_SECRET_ACCESS_KEY		# IAM access key저장
       ```
 
+
+
+
+14. 이제 AWS 업데이트로 인해 Dockerrun.aws.json는 더이상 사용하지 않고 docker-compose.yml 에 한 번에 사용한다.
+
+    - docker-compose-dev.yml
+
+      ```yaml
+      version: "3"
+      services:
+        frontend:
+          build:
+            dockerfile: Dockerfile.dev
+            context: ./frontend
+          volumes:
+            - /app/node_modules
+            - ./frontend:/app
+          stdin_open: true
       
+        nginx: 
+          restart: always
+          build:
+            dockerfile: Dockerfile
+            context: ./nginx
+          ports: 
+            - "3000:80"
+      
+        backend:
+          build: 
+            dockerfile: Dockerfile.dev
+            context: ./backend
+          container_name: app_backend
+          volumes:
+            - /app/node_modules
+            - ./backend:/app
+          
+        mysql:
+          build: ./mysql
+          restart: unless-stopped
+          container_name: app_mysql
+          ports:
+            - "3306:3306"
+          volumes:
+            - ./mysql/mysql_data:/var/lib/mysql
+            - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+          environment:
+            MYSQL_ROOT_PASSWORD: johnahn
+            MYSQL_DATABASE: myapp
+      
+      ```
+
+      
+
+    - docker-compose.yml
+
+      ```yaml
+      version: "3"
+      services:
+        frontend:
+          image: johnahn/docker-frontend
+          volumes:
+            - /app/node_modules
+            - ./frontend:/app
+          stdin_open: true
+          mem_limit: 128m
+      
+        nginx: 
+          restart: always
+          image: johnahn/docker-nginx
+          ports: 
+            - "80:80"
+      
+        backend:
+          image: johnahn/docker-backend
+          container_name: app_backend
+          volumes:
+            - /app/node_modules
+            - ./backend:/app
+          mem_limit: 128m
+          environment: 
+            MYSQL_HOST: $MYSQL_HOST 
+            MYSQL_USER: $MYSQL_USER 
+            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+            MYSQL_DATABASE: $MYSQL_DATABASE
+            MYSQL_PORT: $MYSQL_PORT   
+      
+        # mysql:
+        #   build: ./mysql
+        #   restart: unless-stopped
+        #   container_name: app_mysql
+        #   ports:
+        #     - "3306:3306"
+        #   volumes:
+        #     - ./mysql/mysql_data:/var/lib/mysql
+        #     - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+        #   environment:
+        #     MYSQL_ROOT_PASSWORD: johnahn
+        #     MYSQL_DATABASE: myapp
+      
+      ```
+
+      
+
+    
