@@ -273,7 +273,7 @@
 
       => 저장된 키를 travis.yml에서 가져와서 사용
 
-    ![33](https://user-images.githubusercontent.com/73927750/155831413-eb03a657-ea59-47a3-b47d-79186f3721a1.png)
+    
 
     
     
