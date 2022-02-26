@@ -259,20 +259,24 @@
 
       
 
-12.  Travis CI의 AWS 접근을 위한 API key생성
+12. Travis CI의 AWS 접근을 위한 API key생성
 
-    - 소스파일을 전달하기 위한 접근 조건
+    소스파일을 전달하기 위한 접근 조건
 
-      ![32](https://user-images.githubusercontent.com/73927750/155831412-8bec73ef-1ee2-43e8-9edf-4c5fa5b31674.png)
+    ![32](https://user-images.githubusercontent.com/73927750/155831412-8bec73ef-1ee2-43e8-9edf-4c5fa5b31674.png)
+
+    
 
 13.  AWS IAM 생성 후 .travis.yml파일의 환경변수에 최종 등록하기(위의 IAM과 같음)
 
-    - 만들어진 key를 Travis CI에 저장해줘야함(환경변수에.. DOCKER_HUB_ID 저장한 곳) => 저장된 키를 .travis.yml에서 가져와서 사용
+    만들어진 key를 Travis CI에 저장해줘야함(환경변수에.. DOCKER_HUB_ID 저장한 곳) => 저장된 키를 .travis.yml에서 가져와서 사용
 
-      ![33](https://user-images.githubusercontent.com/73927750/155831413-eb03a657-ea59-47a3-b47d-79186f3721a1.png)
+    ![33](https://user-images.githubusercontent.com/73927750/155831413-eb03a657-ea59-47a3-b47d-79186f3721a1.png)
 
-    - .travis.yml의 최종상태(Travis CI의 환경변수까지 적용된 상태)
+    
 
+    - travis.yml의 최종상태(Travis CI의 환경변수까지 적용된 상태)
+    
       ```yaml
       language: generic
       
@@ -312,7 +316,7 @@
         access_key_id: $AWS_ACCESS_KEY				# IAM key저장
         secret_access_key: $AWS_SECRET_ACCESS_KEY		# IAM access key저장
       ```
-
+    
 
 
 
