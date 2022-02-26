@@ -4,7 +4,7 @@
 
 ## 1. Flow
 
-![8](Docker CI [4].assets/8.png)
+![8](https://user-images.githubusercontent.com/73927750/155833596-648d30dc-242e-4e74-9fb2-8ca7fee2dfe9.png)
 
 
 
@@ -49,7 +49,7 @@
 
 - node_modules 삭제 
 
-  ![9](Docker CI [4].assets/9.png)
+  ![9](https://user-images.githubusercontent.com/73927750/155833597-8bc03c9e-5862-4dbb-abe5-70ff27b618e2.png)
 
 - 포트 설정 + -it 옵션을 한 후 에 run!
 
@@ -118,7 +118,7 @@
 
 ## 3. Nginx
 
-- ![10](Docker CI [4].assets/10.png)
+- ![10](https://user-images.githubusercontent.com/73927750/155833598-f0395d54-614e-4439-9aed-2a68bd56715d.png)
 
 - 개발환경에서는 개발서버를 사용하지만 운영환경에서는 개발서버가 아닌 nginx를 사용한다.
 
@@ -133,7 +133,7 @@
 
 - 개발환경 Dockerfile VS 운영용 Dockerfile
 
-  ![11](Docker CI [4].assets/11.png)
+  ![11](https://user-images.githubusercontent.com/73927750/155833601-dab0b5af-5132-4599-9ffb-f2f6c5f6ebd4.png)
 
 - 운영용 Dockerfile은
   => react 빌드파일을 만드는 부분(builder stage) + nginx를 실행하는 부분(run stage) 로 구성
@@ -142,7 +142,7 @@
 
 - 운영용 Dockerfile 구조
 
-  ![12](Docker CI [4].assets/12.png)
+  ![12](https://user-images.githubusercontent.com/73927750/155833602-dfd8772d-5eef-49b2-b486-56587babec2c.png)
 
 - nginx 와 연결하기 위해서는 /usr/share/nginx/html 에 연결
 

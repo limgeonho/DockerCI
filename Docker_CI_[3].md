@@ -20,7 +20,7 @@
 
 - nodejs + redis 로 만든 앱을 docker로 올리면
 
-- ![5](Docker CI [3].assets/5.png)
+- ![5](https://user-images.githubusercontent.com/73927750/155833593-14892200-3b0c-4b54-a32a-ca9a0ad380f8.png)
 
 - 먼저 redis 서버가 작동하고 있어야함(전제)
 
@@ -31,13 +31,11 @@
   => 이유는 컨테이너 사이에서 아무런 설정없이 통신할 수 없기 때문에
   => nodejs 앱에서 redis 서버에 접근 할 수 없다.
 
-- ![6](Docker CI [3].assets/6.png)
+- ![6](https://user-images.githubusercontent.com/73927750/155833594-8af2796f-365c-4246-ac7b-0b838afa840e.png)
 
 - 통신을하기 위해 docker-compose.yml 파일 작성
 
   컨테이너 사이에서 통신 설정을 해주기 위해서는 (멀티 컨테이너 상황)
-
-- ![7](Docker CI [3].assets/7.png)
 
 - docker-compose.yml
 

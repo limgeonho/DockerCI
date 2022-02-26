@@ -34,7 +34,7 @@
 
 - 파일 스냅샷이 컨테이너의 하드디스크로 들어오고 시작시 실행 될 명령어가 실행중인 프로세스에 들어가서 명령을 수행함
 
-  ![1](Docker_CI_[1].assets/1.png)
+  ![1](https://user-images.githubusercontent.com/73927750/155833603-59a637bb-70fa-4ae6-b5bd-3a2e3b49e554.png)
 
 ​	
 
@@ -50,7 +50,7 @@
 
 - docker의 생명주기
 
-  ![2](Docker_CI_[1].assets/2-16457658553652.png)
+  ![2](https://user-images.githubusercontent.com/73927750/155833604-2b886571-d0c8-44e8-a8c9-87fd3e9bcb70.png)
 
 - ```shell
   docker run = docker create + docker start

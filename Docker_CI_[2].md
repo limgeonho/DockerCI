@@ -64,7 +64,7 @@ CMD ["node", "server.js"]
 
   => 또 에러가 발생함 포트때문
 
-- ![3](Docker_CI_[2].assets/3.png)
+- ![3](https://user-images.githubusercontent.com/73927750/155833590-ba491560-fdc6-4553-b6d3-4aeec63b552e.png)
   
 - server.js에 PORT를 8080으로 설정했지만 localhost PORT에서는 접근할 방법이 없다...
   => docker run -p 5000:8080 ghlim909/nodejs
@@ -101,7 +101,7 @@ CMD ["node", "server.js"]
 
 - WORKDIR 적용 결과
 
-  ![4](Docker_CI_[2].assets/4.png)
+  ![4](https://user-images.githubusercontent.com/73927750/155833591-46acef72-91f0-49d9-ba4c-73e4e476c2a2.png)
 
 
 
@@ -151,10 +151,10 @@ CMD ["node", "server.js"]
 
 
 - VOLUME 옵션
+
 - COPY는 로컬의 파일을 컨테이너에 복사하지만 
   VOLUME은 컨테이너가 로컬의 파일을 참조함(COPY와 반대)
-- ![6](Docker_CI_[2].assets/6.png)
-
+  
 - VOLUME을 사용해서 파일목록을 mapping하면 이후에 소스코드가 바뀌어도 이미지를 다시 빌드하지 않고 컨테이너만  stop했다가 run해서 변경된 코드 적용 가능
 
 - ```shell
