@@ -269,15 +269,13 @@
 
 13.  AWS IAM 생성 후 travis.yml파일의 환경변수에 최종 등록하기
 
-    만들어진 key를 Travis CI에 저장해줘야함(환경변수에 - DOCKER_HUB_ID 저장한 곳) 
+    - 만들어진 key를 Travis CI에 저장해줘야함(환경변수에 - DOCKER_HUB_ID 저장한 곳) 
 
-    => 저장된 키를 travis.yml에서 가져와서 사용
-
-    
+      => 저장된 키를 travis.yml에서 가져와서 사용
 
     
-    
-    travis.yml의 최종상태(Travis CI의 환경변수까지 적용된 상태)
+
+    - travis.yml의 최종상태(Travis CI의 환경변수까지 적용된 상태)
     
     ```yaml
     language: generic
