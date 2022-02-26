@@ -10,9 +10,9 @@
 
 ## 2. Travis CI Flow
 
-![13](Docker CI [5].assets/13.png)
+![13](https://user-images.githubusercontent.com/73927750/155833431-f6568a95-5546-405f-888a-b1fd3a0e7267.png)
 
-![14](Docker CI [5].assets/14.png)
+![14](https://user-images.githubusercontent.com/73927750/155833421-8f0aab40-ebb2-492b-a50a-92de22863da9.png)
 
 - repo를 github에 올리고
   이후에 master branch를 Travis CI가 가져가서 테스트를 진행한다
@@ -67,7 +67,7 @@
   => apache, nginx 같은 친숙한 서버에서 다양한 언어와 docker로 개발된 웹 응용 프로그램 및 서비스를
   배포하고 확장하기 쉬운 서비스이다.
 
-  ![15](Docker CI [5].assets/15.png)
+  ![15](https://user-images.githubusercontent.com/73927750/155833423-1a618ddb-8a74-44df-93f8-314e727c8f9c.png)
 
   - EB에는 EC2인스턴스, 데이터베이스, Security그룹 등 다양한 요소들이 환경을 구성하고 있다.
 
@@ -76,7 +76,7 @@
 
 - .travis.yml에 deploy 부분 추가 작성하기
 
-  ![16](Docker CI [5].assets/16.png)
+  ![16](https://user-images.githubusercontent.com/73927750/155833424-58546a87-8b89-4bd7-9bb7-ad541e9edbf1.png)
 
 - .travis.yml(AWS 배포 추가)
 
@@ -117,7 +117,7 @@
 - Travis CI와 AWS가 연동되기 위해서는 인증이 필요함
   => AWS에서 제공하는 secret key를 Travis yml파일에 적어줘야함
 
-  ![17](Docker CI [5].assets/17.png)
+  ![17](https://user-images.githubusercontent.com/73927750/155833426-76eb0ca4-57e2-4745-8cb4-463ed79443de.png)
 
 - => 위의 인증을 위해서는 API key가 필요함
 
