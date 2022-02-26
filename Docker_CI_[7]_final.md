@@ -216,7 +216,7 @@
 
 11.  .travis.yml에 배포부분 추가하기
 
-    .travis.yml(deploy 설정까지 추가된 상태)
+    travis.yml(deploy 설정까지 추가된 상태)
 
     ```yaml
     language: generic
