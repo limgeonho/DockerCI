@@ -214,47 +214,51 @@
 
     ![31](https://user-images.githubusercontent.com/73927750/155831411-7ce81dac-988e-48d3-a175-fb87c2865995.png)
 
-11.  .travis.yml에 배포부분 추가하기
+    
 
-    travis.yml(deploy 설정까지 추가된 상태)
+11. travis.yml에 배포부분 추가하기
 
-    ```yaml
-    language: generic
-    
-    sudo: required
-    
-    services:
-      - docker
-    
-    before_install:
-      - docker build -t ghlim909/react-test-app -f ./frontend/Dockerfile.dev ./frontend
-    
-    script:
-      - docker run -e CI=true ghlim909/react-test-app npm test
-    
-    after_success:
-      - docker build -t ghlim909/docker-frontend ./frontend
-      - docker build -t ghlim909/docker-backend ./backend
-      - docker build -t ghlim909/docker-nginx ./nginx
-    
-      - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
-    
-      - docker push ghlim909/docker-frontend
-      - docker push ghlim909/docker-backend
-      - docker push ghlim909/docker-nginx
-    
-    deploy:
-      provider: elasticbeanstalk
-    
-      region: "ap-northeast-2"
-      app: "docker-fullstack-app"						# 앱 이름
-      env: "Dockerfullstackapp-env"						# 앱 환경 이름
-      bucket_name: elasticbeanstalk-ap-northeast-2-xxx	# S3의 이름
-      bucket_path: "docker-fullstack-app"				# 앱 이름과 똑같이 설정
-      on:
-        branch: master
-    ```
-    
+    - travis.yml(deploy 설정까지 추가된 상태)
+
+      ```yaml
+      language: generic
+      
+      sudo: required
+      
+      services:
+        - docker
+      
+      before_install:
+        - docker build -t ghlim909/react-test-app -f ./frontend/Dockerfile.dev ./frontend
+      
+      script:
+        - docker run -e CI=true ghlim909/react-test-app npm test
+      
+      after_success:
+        - docker build -t ghlim909/docker-frontend ./frontend
+        - docker build -t ghlim909/docker-backend ./backend
+        - docker build -t ghlim909/docker-nginx ./nginx
+      
+        - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
+      
+        - docker push ghlim909/docker-frontend
+        - docker push ghlim909/docker-backend
+        - docker push ghlim909/docker-nginx
+      
+      deploy:
+        provider: elasticbeanstalk
+      
+        region: "ap-northeast-2"
+        app: "docker-fullstack-app"						# 앱 이름
+        env: "Dockerfullstackapp-env"						# 앱 환경 이름
+        bucket_name: elasticbeanstalk-ap-northeast-2-xxx	# S3의 이름
+        bucket_path: "docker-fullstack-app"				# 앱 이름과 똑같이 설정
+        on:
+          branch: master
+      ```
+
+      
+
 12.  Travis CI의 AWS 접근을 위한 API key생성
 
     - 소스파일을 전달하기 위한 접근 조건
