@@ -11,7 +11,7 @@
 
 - nginx를 server + proxy 둘 다 사용
 
-  ![18](C:\Users\임건호\Desktop\Docker_CI\Docker_images\18.png)
+  ![18](https://user-images.githubusercontent.com/73927750/155833428-290e7269-3417-47d0-b15a-da16409a8419.png)
 
 - BE - package.json
 
@@ -99,7 +99,7 @@
 
 - DB의 개발환경 VS 운영환경
 
-  ![19](Docker CI [6].assets/19.png)
+  ![19](https://user-images.githubusercontent.com/73927750/155833429-f10b912d-f3a9-474b-9e68-c7b792a51694.png)
 
 - mysql my.cnf	=> nginx의 conf를 작성한 것과 같은 이치로 mysql의 설정 
 
@@ -233,7 +233,7 @@
   *호스트 파일 시스템에 저장되고 그 중에서도 도커에 의해서만 통제가 되는 도커 Area에 저장 되므로
   컨테이너를 삭제해도 변화된 데이터는 사라지지 않는다
 
-  ![20](Docker CI [6].assets/20.png)
+  ![20](https://user-images.githubusercontent.com/73927750/155833430-74bff69b-7278-4efd-be4e-b289865a45d2.png)
 
   ```yaml
    # docker-compose.yml의 mysql에서(위의 docker-compose.yml에 적용해놓음)
