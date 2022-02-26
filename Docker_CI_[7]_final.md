@@ -267,9 +267,9 @@
 
     
 
-13.  AWS IAM 생성 후 travis.yml파일의 환경변수에 최종 등록하기(위의 IAM과 같음)
+13.  AWS IAM 생성 후 travis.yml파일의 환경변수에 최종 등록하기
 
-    - 만들어진 key를 Travis CI에 저장해줘야함(환경변수에.. DOCKER_HUB_ID 저장한 곳) 
+    - 만들어진 key를 Travis CI에 저장해줘야함(환경변수에 - DOCKER_HUB_ID 저장한 곳) 
 
       => 저장된 키를 travis.yml에서 가져와서 사용
 
@@ -320,10 +320,6 @@
       ```
     
       
-    
-    
-
-
 
 14. 이제 AWS 업데이트로 인해 Dockerrun.aws.json는 더이상 사용하지 않고 docker-compose.yml 에 한 번에 사용한다.
 
