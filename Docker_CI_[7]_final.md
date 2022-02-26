@@ -269,57 +269,57 @@
 
 13.  AWS IAM 생성 후 travis.yml파일의 환경변수에 최종 등록하기
 
-    - 만들어진 key를 Travis CI에 저장해줘야함(환경변수에 - DOCKER_HUB_ID 저장한 곳) 
+    만들어진 key를 Travis CI에 저장해줘야함(환경변수에 - DOCKER_HUB_ID 저장한 곳) 
 
-      => 저장된 키를 travis.yml에서 가져와서 사용
-
-    
+    => 저장된 키를 travis.yml에서 가져와서 사용
 
     
+
     
-    - travis.yml의 최종상태(Travis CI의 환경변수까지 적용된 상태)
     
-      ```yaml
-      language: generic
-      
-      sudo: required
-      
-      services:
-        - docker
-      
-      before_install:
-        - docker build -t ghlim909/react-test-app -f ./frontend/Dockerfile.dev ./frontend
-      
-      script:
-        - docker run -e CI=true ghlim909/react-test-app npm test
-      
-      after_success:
-        - docker build -t ghlim909/docker-frontend ./frontend
-        - docker build -t ghlim909/docker-backend ./backend
-        - docker build -t ghlim909/docker-nginx ./nginx
-      
-        - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
-      
-        - docker push ghlim909/docker-frontend
-        - docker push ghlim909/docker-backend
-        - docker push ghlim909/docker-nginx
-      
-      deploy:
-        provider: elasticbeanstalk
-      
-        region: "ap-northeast-2"
-        app: "docker-fullstack-app"					
-        env: "Dockerfullstackapp-env"				
-        bucket_name: elasticbeanstalk-ap-northeast-2-xxx	
-        bucket_path: "docker-fullstack-app"			
-        on:
-          branch: master
-      
-        access_key_id: $AWS_ACCESS_KEY				# IAM key저장
-        secret_access_key: $AWS_SECRET_ACCESS_KEY		# IAM access key저장
-      ```
+    travis.yml의 최종상태(Travis CI의 환경변수까지 적용된 상태)
     
-      
+    ```yaml
+    language: generic
+    
+    sudo: required
+    
+    services:
+      - docker
+    
+    before_install:
+      - docker build -t ghlim909/react-test-app -f ./frontend/Dockerfile.dev ./frontend
+    
+    script:
+      - docker run -e CI=true ghlim909/react-test-app npm test
+    
+    after_success:
+      - docker build -t ghlim909/docker-frontend ./frontend
+      - docker build -t ghlim909/docker-backend ./backend
+      - docker build -t ghlim909/docker-nginx ./nginx
+    
+      - echo "$DOCKER_HUB_PASSWORD" | docker login -u "$DOCKER_HUB_ID" --password-stdin
+    
+      - docker push ghlim909/docker-frontend
+      - docker push ghlim909/docker-backend
+      - docker push ghlim909/docker-nginx
+    
+    deploy:
+      provider: elasticbeanstalk
+    
+      region: "ap-northeast-2"
+      app: "docker-fullstack-app"					
+      env: "Dockerfullstackapp-env"				
+      bucket_name: elasticbeanstalk-ap-northeast-2-xxx	
+      bucket_path: "docker-fullstack-app"			
+      on:
+        branch: master
+    
+      access_key_id: $AWS_ACCESS_KEY				# IAM key저장
+      secret_access_key: $AWS_SECRET_ACCESS_KEY		# IAM access key저장
+    ```
+    
+    
 
 14. 이제 AWS 업데이트로 인해 Dockerrun.aws.json는 더이상 사용하지 않고 docker-compose.yml 에 한 번에 사용한다.
 
