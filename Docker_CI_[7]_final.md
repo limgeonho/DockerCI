@@ -27,7 +27,7 @@
 
 
 
-- ![21](Docker CI [7] - Final.assets/21.png)
+- ![7](https://user-images.githubusercontent.com/73927750/155831414-18cb670b-fde0-4dcb-96d2-bd2492551ea7.png)
 
 
 
@@ -47,7 +47,7 @@
 
    => AWS EB에서 docker hub에 있는 이미지를 가져온 후에 배포
 
-   ![22](Docker CI [7] - Final.assets/22-16458131653161.png)
+   ![22](https://user-images.githubusercontent.com/73927750/155831396-7f5216c6-67d5-43da-831d-85f46d9a9b07.png)
 
    - Travis CI에서 github에 있는 docker-fullstack-app을 활성화한다(이제 push event가 발생하면 Travis CI가 감지함)
 
@@ -90,7 +90,7 @@
    기존에 EB에 배포한 파일에는 Dockerfile이 하나 밖에 없어서 EB가 알아서 배포했지만
    이제는 react, nginx, nodejs 등 여러개의 Dockerfile들이 존재하기 때문에 Dockerrun.aws.json 가 필요함
 
-   ![23](Docker CI [7] - Final.assets/23.png)
+   ![23](https://user-images.githubusercontent.com/73927750/155831398-7a32801e-60e5-4b3e-a0af-838da4e66061.png)
 
    Dockerrun.aws.json
 
@@ -155,17 +155,17 @@
 
      => 하지만 연결은 X
 
-     ![24](Docker CI [7] - Final.assets/24.png)
+     ![24](https://user-images.githubusercontent.com/73927750/155831399-f54e413f-5f15-412e-8b5e-8df152d20ab7.png)
 
      => 해결방법 : Security group설정으로 같은 VPC를 가지는 것들 끼리는 전부 허용해주면 됨
 
-     ![25](Docker CI [7] - Final.assets/25.png)
+     ![25](https://user-images.githubusercontent.com/73927750/155831400-cf8d918c-de10-403e-8ec3-29cec3feb8ce.png)
 
 7. mysql을 위한 RDS 설정
 
    - docker-compose.yml에서 backend의 environment에 MYSQL관련 환경변수 설정
 
-     ![26](Docker CI [7] - Final.assets/26.png)
+     ![26](https://user-images.githubusercontent.com/73927750/155831401-d808d104-95a7-44aa-bc1a-0a466af45158.png)
 
      - 기존의 mysql: 관련 설정들은 주석처리한다.
 
@@ -174,7 +174,7 @@
    - AWS에서 RDS 선택
      다양한 설정 옵션이 있음 
 
-     ![27](Docker CI [7] - Final.assets/27.png)
+     ![27](https://user-images.githubusercontent.com/73927750/155831403-d5fb9a84-aa12-4550-bb5f-4602cf2046df.png)
 
    - => docker-compose에서 설정한 MYSQL 환경변수만 맞춰주면 됨
 
@@ -182,7 +182,7 @@
 
    - VPC 생성 => 보안그룹 인바운드규칙에 3306 mysql 추가
 
-     ![28](Docker CI [7] - Final.assets/28.png)
+     ![28](https://user-images.githubusercontent.com/73927750/155831406-2616d729-b4ed-4df8-96dc-d9cfdfbb19b8.png)
 
 9. Security group_2 설정
 
@@ -190,9 +190,9 @@
 
      1. RDS에 적용
 
-        ![29](Docker CI [7] - Final.assets/29.png)
+        ![29](https://user-images.githubusercontent.com/73927750/155831407-b29ef8c1-239d-4d15-8d32-55d7bcc08c3f.png)
 
-        ![30](Docker CI [7] - Final.assets/30.png)
+        ![30](https://user-images.githubusercontent.com/73927750/155831408-026e3aa1-7299-43c2-b05b-ce889a72baea.png)
 
      2. 다음으로 EB에 적용
 
@@ -210,7 +210,7 @@
 
       => 환경변수 추가(docker-compose backend environment내용 - 이때 MYSQL_HOST만 RDS의 엔드포인트로 설정)
 
-      ![31](Docker CI [7] - Final.assets/31.png)
+      ![31](https://user-images.githubusercontent.com/73927750/155831411-7ce81dac-988e-48d3-a175-fb87c2865995.png)
 
 11.  .travis.yml에 배포부분 추가하기
 
@@ -251,22 +251,19 @@
       bucket_path: "docker-fullstack-app"				# 앱 이름과 똑같이 설정
       on:
         branch: master
-    
-      access_key_id: $AWS_ACCESS_KEY
-      secret_access_key: $AWS_SECRET_ACCESS_KEY
     ```
-
+    
 12.  Travis CI의 AWS 접근을 위한 API key생성
 
     - 소스파일을 전달하기 위한 접근 조건
 
-      ![32](Docker CI [7] - Final.assets/32.png)
+      ![32](https://user-images.githubusercontent.com/73927750/155831412-8bec73ef-1ee2-43e8-9edf-4c5fa5b31674.png)
 
 13.  AWS IAM 생성 후 .travis.yml파일의 환경변수에 최종 등록하기(위의 IAM과 같음)
 
-    - 만들어진 key를 Travis CI에 저장해줘야함(환경변수에... DOCKER_HUB_ID 저장한 곳) => 저장된 키를 .travis.yml에서 가져와서 사용
+    - 만들어진 key를 Travis CI에 저장해줘야함(환경변수에.. DOCKER_HUB_ID 저장한 곳) => 저장된 키를 .travis.yml에서 가져와서 사용
 
-      ![33](Docker CI [7] - Final.assets/33.png)
+      ![33](https://user-images.githubusercontent.com/73927750/155831413-eb03a657-ea59-47a3-b47d-79186f3721a1.png)
 
     - .travis.yml의 최종상태(Travis CI의 환경변수까지 적용된 상태)
 
