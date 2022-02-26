@@ -261,11 +261,11 @@
 
 12. Travis CI의 AWS 접근을 위한 API key생성
 
-    소스파일을 전달하기 위한 접근 조건
+    - 소스파일을 전달하기 위한 접근 조건
 
     ![32](https://user-images.githubusercontent.com/73927750/155831412-8bec73ef-1ee2-43e8-9edf-4c5fa5b31674.png)
 
-    AWS IAM 생성 후 travis.yml파일의 환경변수에 최종 등록하기
+    - AWS IAM 생성 후 travis.yml파일의 환경변수에 최종 등록하기
 
     ![33](https://user-images.githubusercontent.com/73927750/155831413-eb03a657-ea59-47a3-b47d-79186f3721a1.png)
 
@@ -315,104 +315,103 @@
 
     
 
-14. 이제 AWS 업데이트로 인해 Dockerrun.aws.json는 더이상 사용하지 않고 docker-compose.yml 에 한 번에 사용한다.
+13. 이제 AWS 업데이트로 인해 Dockerrun.aws.json는 더이상 사용하지 않고 docker-compose.yml 에 한 번에 사용한다.
 
-    - docker-compose-dev.yml
+- docker-compose-dev.yml
 
-      ```yaml
-      version: "3"
-      services:
-        frontend:
-          build:
-            dockerfile: Dockerfile.dev
-            context: ./frontend
-          volumes:
-            - /app/node_modules
-            - ./frontend:/app
-          stdin_open: true
+  ```yaml
+  version: "3"
+  services:
+    frontend:
+      build:
+        dockerfile: Dockerfile.dev
+        context: ./frontend
+      volumes:
+        - /app/node_modules
+        - ./frontend:/app
+      stdin_open: true
+  
+    nginx: 
+      restart: always
+      build:
+        dockerfile: Dockerfile
+        context: ./nginx
+      ports: 
+        - "3000:80"
+  
+    backend:
+      build: 
+        dockerfile: Dockerfile.dev
+        context: ./backend
+      container_name: app_backend
+      volumes:
+        - /app/node_modules
+        - ./backend:/app
       
-        nginx: 
-          restart: always
-          build:
-            dockerfile: Dockerfile
-            context: ./nginx
-          ports: 
-            - "3000:80"
-      
-        backend:
-          build: 
-            dockerfile: Dockerfile.dev
-            context: ./backend
-          container_name: app_backend
-          volumes:
-            - /app/node_modules
-            - ./backend:/app
-          
-        mysql:
-          build: ./mysql
-          restart: unless-stopped
-          container_name: app_mysql
-          ports:
-            - "3306:3306"
-          volumes:
-            - ./mysql/mysql_data:/var/lib/mysql
-            - ./mysql/sqls/:/docker-entrypoint-initdb.d/
-          environment:
-            MYSQL_ROOT_PASSWORD: johnahn
-            MYSQL_DATABASE: myapp
-      
-      ```
+    mysql:
+      build: ./mysql
+      restart: unless-stopped
+      container_name: app_mysql
+      ports:
+        - "3306:3306"
+      volumes:
+        - ./mysql/mysql_data:/var/lib/mysql
+        - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+      environment:
+        MYSQL_ROOT_PASSWORD: johnahn
+        MYSQL_DATABASE: myapp
+  
+  ```
 
-      
+  
 
-    - docker-compose.yml
+- docker-compose.yml
 
-      ```yaml
-      version: "3"
-      services:
-        frontend:
-          image: johnahn/docker-frontend
-          volumes:
-            - /app/node_modules
-            - ./frontend:/app
-          stdin_open: true
-          mem_limit: 128m
-      
-        nginx: 
-          restart: always
-          image: johnahn/docker-nginx
-          ports: 
-            - "80:80"
-      
-        backend:
-          image: johnahn/docker-backend
-          container_name: app_backend
-          volumes:
-            - /app/node_modules
-            - ./backend:/app
-          mem_limit: 128m
-          environment: 
-            MYSQL_HOST: $MYSQL_HOST 
-            MYSQL_USER: $MYSQL_USER 
-            MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
-            MYSQL_DATABASE: $MYSQL_DATABASE
-            MYSQL_PORT: $MYSQL_PORT   
-      
-        # mysql:
-        #   build: ./mysql
-        #   restart: unless-stopped
-        #   container_name: app_mysql
-        #   ports:
-        #     - "3306:3306"
-        #   volumes:
-        #     - ./mysql/mysql_data:/var/lib/mysql
-        #     - ./mysql/sqls/:/docker-entrypoint-initdb.d/
-        #   environment:
-        #     MYSQL_ROOT_PASSWORD: johnahn
-        #     MYSQL_DATABASE: myapp
-      
-      ```
+  ```yaml
+  version: "3"
+  services:
+    frontend:
+      image: johnahn/docker-frontend
+      volumes:
+        - /app/node_modules
+        - ./frontend:/app
+      stdin_open: true
+      mem_limit: 128m
+  
+    nginx: 
+      restart: always
+      image: johnahn/docker-nginx
+      ports: 
+        - "80:80"
+  
+    backend:
+      image: johnahn/docker-backend
+      container_name: app_backend
+      volumes:
+        - /app/node_modules
+        - ./backend:/app
+      mem_limit: 128m
+      environment: 
+        MYSQL_HOST: $MYSQL_HOST 
+        MYSQL_USER: $MYSQL_USER 
+        MYSQL_ROOT_PASSWORD: $MYSQL_ROOT_PASSWORD
+        MYSQL_DATABASE: $MYSQL_DATABASE
+        MYSQL_PORT: $MYSQL_PORT   
+  
+    # mysql:
+    #   build: ./mysql
+    #   restart: unless-stopped
+    #   container_name: app_mysql
+    #   ports:
+    #     - "3306:3306"
+    #   volumes:
+    #     - ./mysql/mysql_data:/var/lib/mysql
+    #     - ./mysql/sqls/:/docker-entrypoint-initdb.d/
+    #   environment:
+    #     MYSQL_ROOT_PASSWORD: johnahn
+    #     MYSQL_DATABASE: myapp
+  
+  ```
 
-      
+  
 
-    
