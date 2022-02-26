@@ -200,17 +200,19 @@
 
    - => 이제 EB인스턴스와 RDS가 소통이 가능해짐
 
-10.  EB와 RDS소통을 위한 환경 변수 설정 
+     
 
-    - EB인스턴스와 RDS가 소통이 가능해졌지만
-      EB안에 있는 컨테이너들이 mysql 인스턴스와 소통할 때 환경변수를 인식하지 못함
-      => AWS EB의 구성 
+10. EB와 RDS소통을 위한 환경 변수 설정 
 
-      => 소프트웨어 편집 
+    EB인스턴스와 RDS가 소통이 가능해졌지만
+    EB안에 있는 컨테이너들이 mysql 인스턴스와 소통할 때 환경변수를 인식하지 못함
+    => AWS EB의 구성 
 
-      => 환경변수 추가(docker-compose backend environment내용 - 이때 MYSQL_HOST만 RDS의 엔드포인트로 설정)
+    => 소프트웨어 편집 
 
-    - ![31](https://user-images.githubusercontent.com/73927750/155831411-7ce81dac-988e-48d3-a175-fb87c2865995.png)
+    => 환경변수 추가(docker-compose backend environment내용 - 이때 MYSQL_HOST만 RDS의 엔드포인트로 설정)
+
+    ![31](https://user-images.githubusercontent.com/73927750/155831411-7ce81dac-988e-48d3-a175-fb87c2865995.png)
 
 11.  .travis.yml에 배포부분 추가하기
 
