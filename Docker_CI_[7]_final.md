@@ -315,7 +315,7 @@
 
     
 
-13. 이제 AWS 업데이트로 인해 Dockerrun.aws.json는 더이상 사용하지 않고 docker-compose.yml 에 한 번에 사용한다.
+13. 이제 AWS 업데이트로 인해 Dockerrun.aws.json(deprecated)는 더이상 사용하지 않고 docker-compose.yml 에 한 번에 사용한다.
 
 - docker-compose-dev.yml
 
